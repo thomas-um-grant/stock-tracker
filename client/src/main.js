@@ -1,6 +1,4 @@
 // The app entry point, which loads and initializes Vue along with the root component
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
