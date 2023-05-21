@@ -52,7 +52,7 @@ export default {
     };
 
     const getLatestStockInfos = async () => {
-      const path = 'http://127.0.0.1:5001/stonksV2';
+      const path = '/stonksV2';
       try {
         const response = await axios.get(path);
         stockData.value = response.data;
