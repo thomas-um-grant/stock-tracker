@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 
+# My modules
+import  APIs.GetStocks as stocksEndpoint
 
 # instantiate the app
 app = Flask(__name__)
@@ -14,30 +16,25 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 def ping_pong():
     return jsonify('pong!')
 
-# testing get_stocks
-@app.route('/stocks', methods=['GET'])
-def get_stocks():
-    response = jsonify({
-                    "labels": [
-                        'January',
-                        'February',
-                        'March',
-                        'April',
-                        'May',
-                        'June',
-                        'July'
-                    ],
-                    "datasets": [
-                    {
-                        "label": 'Data One',
-                        "borderColor": '#f87979',
-                        "data": [40, 39, 10, 40, 39, 80, 40]
-                    }
-                    ]
-                })
-    print(response)
-    return response
+# Return a single payload formatted as the Chart.config.data object from Chart.js
+@app.route('/stonks', methods=['GET'])
+def getStonks():
+    return stocksEndpoint.getStonks()
 
+# New endpoint in development
+@app.route('/stonksV2', methods=['GET'])
+def getStonksV2():
+    return stocksEndpoint.getStonksV2()
+
+# testing data
+@app.route('/fake-stonks', methods=['GET'])
+def get_latest_stocks():
+    return stocksEndpoint.get_latest_stocks()
+
+# get statistics
+@app.route('/stats', methods=['GET'])
+def get_stats():
+    return stocksEndpoint.get_latest_stats()
 
 if __name__ == '__main__':
     app.run()
