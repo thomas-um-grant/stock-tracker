@@ -1,4 +1,7 @@
 # <Stock Tracker>
+ 
+ ![chart](chart.png)
+ ![chart](stats.png)
 
 ## Description
 
