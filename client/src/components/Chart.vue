@@ -1,7 +1,7 @@
 <template>
   <div class="lineChart">
-    <div id="chartContainer" style="position: relative; height:40vh; width:80vw">
-      <canvas ref="stockChartCanvas" style="margin:auto;"></canvas>
+    <div id="chartContainer" style="position: relative;">
+      <canvas ref="stockChartCanvas"></canvas>
     </div>
   </div>
 </template>

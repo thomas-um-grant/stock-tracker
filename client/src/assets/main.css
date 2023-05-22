@@ -73,6 +73,7 @@ table {
   .lineChart{
     padding-top: 2%;
     padding-bottom: 2%;
+    scale: 100%;
   }
 
   .statsTable {
@@ -84,4 +85,11 @@ table {
 
   .title{
     padding-top: 50px;
+  }
+
+  canvas{
+    margin:auto; 
+    width: 100%; 
+    padding-left: 10%;
+    padding-right: 10%;
   }
