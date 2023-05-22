@@ -21,7 +21,7 @@ I also used Heroku to deploy it on a docker image.
 You can check it out on: https://stock-tracker-for-alquant.herokuapp.com/
  
 Run Flask backend separately for development:
-  - in /server: flask run --port=5001 --debug
+  - in /server: flask run --port=5000 --debug
   
 Run Vue frontend separately for development:
   - in /client: npm run dev

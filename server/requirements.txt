@@ -1,5 +1,7 @@
+APScheduler==3.6.3
+exchange-calendars==4.2.7
 Flask==2.3.2
 Flask-Cors==3.0.10
 pandas==2.0.1
 pandas-market-calendars==4.1.4
-APScheduler==3.6.3
+requests==2.30.0

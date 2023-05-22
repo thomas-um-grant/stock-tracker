@@ -39,7 +39,7 @@ export default {
         const statistics = ref(null);
 
         const getLatestStatistics = async () => {
-            const path = 'http://127.0.0.1:5001/stats';
+            const path = '/stats';
             try {
                 const response = await axios.get(path);
                 statistics.value = response.data;
