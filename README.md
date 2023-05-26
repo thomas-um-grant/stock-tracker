@@ -20,13 +20,19 @@ I also used Heroku to deploy it on a docker image.
 
 You can check it out on: https://stock-tracker-for-alquant.herokuapp.com/
  
-Run Flask backend separately for development:
-  - in /server: flask run --port=5000 --debug
+Run locally:
+  - On the server side, first download all the required packages from the /server folder using pip:
+    - pip install -r requirements.txt
+  - Then do the same on the client side with npm from the /client folder:
+    - npm install
+
+  - Run Flask backend separately for development, from the /server folder:
+    - flask run --port=5000 --debug
+    
+  - Run Vue frontend separately for development, from the /client folder:
+    - npm run dev
   
-Run Vue frontend separately for development:
-  - in /client: npm run dev
-  
-Run a Docker image locally:
+Run a Docker image locally (The packages will automatically be loaded into the docker image):
   - docker build -t web:latest .
   - docker run -d --name stock-tracker-for-alquant -e "PORT=8765" -p 8007:8765 web:latest
   - docker stop stock-tracker-for-alquant

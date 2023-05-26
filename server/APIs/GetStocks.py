@@ -8,6 +8,7 @@ from Adapters import PolygonAPIAdapter as polygonAPI
 
 # Get infos for each stock
 def getStonks():
+    print("TEST in Get stocks...")
     # In v1, we have a fixed set of stocks
     stock_symbols = ['AAPL', 'MSFT', 'TSLA']  
     # read from db

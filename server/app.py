@@ -1,12 +1,14 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-import time
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
+from flask_apscheduler import APScheduler
 
 # My modules
 from Adapters import PolygonAPIAdapter as polygonAPI
 import  APIs.GetStocks as stocksEndpoint
+
+# set configuration values
+class Config:
+    SCHEDULER_API_ENABLED = True
 
 # instantiate the app
 app = Flask(__name__)
@@ -14,6 +16,22 @@ app.config.from_object(__name__)
 
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
+
+# initialize scheduler
+scheduler = APScheduler()
+scheduler.api_enabled = True
+scheduler.init_app(app)
+
+# cron job to collect latest stock infos
+@scheduler.task('cron', id='update_stocks', minute='*')
+def update_stocks():
+    print(f'Updating stocks...')
+    stock_symbols = ['AAPL', 'MSFT', 'TSLA'] 
+    responses = {}
+    for stock_symbol in stock_symbols:
+        responses[stock_symbol] = polygonAPI.getStockInfos(stock_symbol)
+    # Keep in in json file for now, maybe have an actual DB later on, the data is structure, might wanna go for a regular SQL
+    stocksEndpoint.writeStockInfos(responses)
 
 # sanity check route
 @app.route('/ping', methods=['GET'])
@@ -40,28 +58,9 @@ def get_latest_stocks():
 def get_stats():
     return stocksEndpoint.get_latest_stats()
 
-# Job to update the stocks periodically
-def updateStocks():
-    print(f'Updating stocks: {time.strftime("%A, %d. %B %Y %I:%M:%S %p")}')
-    stock_symbols = ['AAPL', 'MSFT', 'TSLA'] 
-    responses = {}
-    for stock_symbol in stock_symbols:
-        responses[stock_symbol] = polygonAPI.getStockInfos(stock_symbol)
-    # Keep in in json file for now, maybe have an actual DB later on, the data is structure, might wanna go for a regular SQL
-    stocksEndpoint.writeStockInfos(responses)
 
-def startScheduler():
-    # Create the background scheduler
-    scheduler = BackgroundScheduler()
-    # Create the job
-    scheduler.add_job(func=updateStocks, trigger="interval", seconds=90)
-    # Start the scheduler
-    scheduler.start()
-    # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
+scheduler.start()
 
-
-if __name__ == '__main__':\
-    # Start the scheduler
-    startScheduler()
+if __name__ == '__main__':
+    # Run the Flask app
     app.run()
