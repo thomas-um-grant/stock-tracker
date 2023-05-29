@@ -12,7 +12,7 @@ import requests
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 
-def getStockInfos(stock_symbol):
+def get_stock_infos(stock_symbol):
     """Get a stock information from the Polygon API
 
     Parameters

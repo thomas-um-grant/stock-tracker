@@ -29,7 +29,7 @@ from flask_apscheduler import APScheduler
 
 # My modules
 from Adapters import PolygonAPIAdapter as polygonAPI
-import  APIs.GetStocks as stocksEndpoint
+import  APIs.Stocks as stocks
 
 class Config:
     """Set the configuration values"""
@@ -50,13 +50,14 @@ scheduler.init_app(app)
 @scheduler.task('cron', id='update_stocks', minute='*')
 def update_stocks():
     """Cron job running every minute to update the stocks information using the Polygon API"""
+
     print(f'Updating stocks...')
-    stock_symbols = ['AAPL', 'MSFT', 'TSLA'] 
+    stock_symbols = ['AAPL', 'MSFT', 'TSLA']
     responses = {}
     for stock_symbol in stock_symbols:
-        responses[stock_symbol] = polygonAPI.getStockInfos(stock_symbol)
+        responses[stock_symbol] = polygonAPI.get_stock_infos(stock_symbol)
     # Keep in in json file for now, maybe have an actual DB later on, the data is structure, might wanna go for a regular SQL
-    stocksEndpoint.writeStockInfos(responses)
+    stocks.write_stock_infos(responses)
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():
@@ -69,8 +70,8 @@ def ping_pong():
     """
     return jsonify('pong!')
 
-@app.route('/stonks', methods=['GET'])
-def getStonks():
+@app.route('/stocks', methods=['GET'])
+def get_stocks():
     """Get the most up-to-date stocks information
 
     Returns
@@ -78,17 +79,7 @@ def getStonks():
     Object
         a payload formatted as the Chart.config.data object from Chart.js
     """
-    return stocksEndpoint.getStonks()
-
-# New endpoint in development
-@app.route('/stonksV2', methods=['GET'])
-def getStonksV2():
-    return stocksEndpoint.getStonksV2()
-
-# testing data
-@app.route('/fake-stonks', methods=['GET'])
-def get_latest_stocks():
-    return stocksEndpoint.get_latest_stocks()
+    return stocks.get_stocks()
 
 @app.route('/stats', methods=['GET'])
 def get_stats():
@@ -99,7 +90,7 @@ def get_stats():
     Object
         an object with statistics grouped by stock
     """
-    return stocksEndpoint.get_latest_stats()
+    return stocks.get_stats()
 
 # Start the scheduler to run the cron job
 scheduler.start()

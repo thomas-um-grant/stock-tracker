@@ -3,14 +3,14 @@
 This file is used to format the data returned by this server
 
 The methods available are:
-- formatDates -> Returns a date as a string in format "YYYY-MM-DD"
-- formatDatasets -> Returns the performances for each stock in a Chart.js data object
+- format_dates -> Returns a date as a string in format "YYYY-MM-DD"
+- format_datasets -> Returns the performances for each stock in a Chart.js data object
 """
 
 # Libraries
 from datetime import datetime
 
-def formatDates(stock_symbol, responses):
+def format_dates(stock_symbol, responses):
     """Formats the dates which will be used for the x-axis in the chart
 
     Parameters
@@ -30,7 +30,7 @@ def formatDates(stock_symbol, responses):
         dates.append(datetime.fromtimestamp(int(result['t'])/1000).strftime('%Y-%m-%d'))
     return dates
 
-def formatDatasets(stock_symbols, performances):
+def format_datasets(stock_symbols, performances):
     """Formats the datasets to match the Chart.js dataset object
 
     Parameters
