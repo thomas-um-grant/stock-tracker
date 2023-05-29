@@ -1,9 +1,36 @@
+"""Stats
+
+This file is used to perform calculations and uncover statistics regarding the stocks tracked
+
+The methods available are:
+- calculatePerformances -> Returns the performances calculated per stock
+- calculateCumulativeReturn -> Returns a list of cumulative returns calculated per stock
+- calculateAnnualizedReturn -> Returns a list of annualized returns calculated per stock
+- calculateAnnualizedVolatility -> Returns a list of annualized volatility calculated per stock
+- getLatestTradingDay -> Returns the latest trading day date
+"""
+
+# Libraries
 from datetime import datetime, date, timedelta
 import pandas as pd
 import pandas_market_calendars as mcal
 import math
 
 def calculatePerformances(stock_symbols, responses):
+    """Calculates the performances of each stock
+
+    Parameters
+    ----------
+    stock_symbols : list
+        List of the stock symbols
+    responses : object
+        key: stock symbol, value: the object returned by the Polygon API
+
+    Returns
+    -------
+    list
+        a list of performances for each stock
+    """
     performances = []
 
     for stock_symbol in stock_symbols:
@@ -35,10 +62,24 @@ def calculatePerformances(stock_symbols, responses):
     
     return performances
 
-# Cumulative returns
 def calculateCumulativeReturn(stock_symbols, stockInfos):
-    # cumulative return on the past 2 years = (close price - open price) / open price
-    # so we are looking at the first and last entries in our payload
+    """Calculates the cumulative return of each stock
+
+    The cumulative return on the past 2 years is: (close price - open price) / open price
+    Therefore we need the first and last entries of each stocks information
+
+    Parameters
+    ----------
+    stock_symbols : list
+        List of the stock symbols
+    stockInfos : object
+        key: stock symbol, value: the object returned by the Polygon API
+
+    Returns
+    -------
+    list
+        a list with the cumulative return of each stock
+    """
     cumul_returns = []
 
     for stock_symbol in stock_symbols:
@@ -49,11 +90,25 @@ def calculateCumulativeReturn(stock_symbols, stockInfos):
 
     return cumul_returns
 
-# Annualized returns
 def calculateAnnualizedReturn(stock_symbols, stockInfos):
-    # annualized return on the past 2 years = ( (close price / open price)^(1 / num of years) ) -1
-    # so we are looking at the first and last entries in our payload again
-    # to calculate the num of years, we just have to divide the num of entires epr 252, which constitue a "trading year"
+    """Calculates the annualized return of each stock
+
+    The annualized return on the past 2 years is: ( (close price / open price)^(1 / num of years) ) -1
+    Therefore we need the first and last entries of each stocks information
+    To calculate the number of years, we just have to divide the num of entires epr 252, which constitue a "trading year"
+
+    Parameters
+    ----------
+    stock_symbols : list
+        List of the stock symbols
+    stockInfos : object
+        key: stock symbol, value: the object returned by the Polygon API
+
+    Returns
+    -------
+    list
+        a list with the annualized return of each stock
+    """
     annualized_returns = []
 
     for stock_symbol in stock_symbols:
@@ -65,11 +120,25 @@ def calculateAnnualizedReturn(stock_symbols, stockInfos):
 
     return annualized_returns
 
-# Annualized volatility
 def calculateAnnualizedVolatility(stock_symbols, stockInfos):
-    # annualized volatility on the past 2 years = standard deviation of ( [sum(daily % change - mean(all entries)]**2 /  (number of entries -1))
-    # so we are going to loop through all entries to get the daily % change
-    # Then we can sum them up, divide them and finally look at the standard deviation
+    """Calculates the annualized volatility of each stock
+
+    The annualized volatility on the past 2 years is: standard deviation of ( [sum(daily % change - mean(all entries)]**2 /  (number of entries -1))
+    Therefore we need to loop through all entries of each stock information to get the daily % change
+    We can sum them up, divide them and finally look at the standard deviation
+
+    Parameters
+    ----------
+    stock_symbols : list
+        List of the stock symbols
+    stockInfos : object
+        key: stock symbol, value: the object returned by the Polygon API
+
+    Returns
+    -------
+    list
+        a list with the annualized volatility of each stock
+    """
     annualized_volatilities = []
 
     for stock_symbol in stock_symbols:
@@ -92,8 +161,14 @@ def calculateAnnualizedVolatility(stock_symbols, stockInfos):
 
     return annualized_volatilities
 
-# Get the latest trading day
 def getLatestTradingDay():
+    """Gets the latest 'trading day'
+
+    Returns
+    -------
+    string
+        a string representing the latest trading date
+    """
     exchange_calendar = mcal.get_calendar('NYSE')
     start_date = pd.Timestamp(date.today() + timedelta(days=-10))  # Specify your desired start date
     end_date = pd.Timestamp(date.today())  # Specify your desired end date

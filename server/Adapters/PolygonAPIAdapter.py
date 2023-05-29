@@ -1,9 +1,30 @@
+"""Polygon API Adapter
+
+This file is used to connect and gather data from the Polygon API
+
+The methods available are:
+- getStockInfos -> Returns a Polygon stock information object regarding a stock
+"""
+
+# Libraries
 from datetime import date, timedelta
 import requests
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 
 def getStockInfos(stock_symbol):
+    """Get a stock information from the Polygon API
+
+    Parameters
+    ----------
+    stock_symbol : string
+        A stock symbol
+
+    Returns
+    -------
+    Object
+        An object containing information of a stock results over time (daily)
+    """
     # With the free tier, I can only go back 2 years max (504 days since there are 252 traiding days in a year), so even if I request the last 1000 days I'll be limited :(
     sDate = (date.today() + timedelta(days=-1000)).strftime("%Y-%m-%d")
     eDate = (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d") # Can't get today's date (no stats registered yet, makes sense)

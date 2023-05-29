@@ -1,3 +1,15 @@
+"""Stocks
+
+This file is used to get information regarding stocks and their statistics
+
+The methods available are:
+- getStonks -> Returns the performances of each stock in a Chart.js readable format
+- get_latest_stats -> Returns the statistics for each stock tracked 
+- readStockInfos -> Returns the json where all the stock information is stored
+- writeStockInfos -> Update the json where all the stock information is stored
+"""
+
+# Libraries
 from flask import jsonify, request
 import json
 
@@ -6,9 +18,15 @@ from Helpers import PayloadFormatter as formatter
 from Helpers import Stats as stats
 from Adapters import PolygonAPIAdapter as polygonAPI
 
-# Get infos for each stock
 def getStonks():
-    print("TEST in Get stocks...")
+    """Get infos for each stock
+
+    Returns
+    -------
+    Object
+        The performances of each stock in a Chart.js readable format
+    """
+
     # In v1, we have a fixed set of stocks
     stock_symbols = ['AAPL', 'MSFT', 'TSLA']  
     # read from db
@@ -102,8 +120,14 @@ def get_latest_stocks():
                 })
     return response
 
-# Get statistics on all stocks
 def get_latest_stats():
+    """Get statistics on all stocks
+
+    Returns
+    -------
+    Object
+        The statistics for each stock tracked
+    """
     stock_symbols = ['AAPL', 'MSFT', 'TSLA']
     # read from db
     stonks = readStockInfos()
@@ -121,14 +145,20 @@ def get_latest_stats():
     }
     return jsonify(statistics)
 
-# Read json file where I store the info gathered from the API
 def readStockInfos():
+    """Read json file where I store the info gathered from the API
+
+    Returns
+    -------
+    Object
+        The stocks information stored in a json file
+    """
     file_path = 'stockInfos.json'
     with open(file_path, 'r') as file_object:  
         return json.load(file_object) 
 
-# Write json file
 def writeStockInfos(data):
+    """Write json file where I store the info gathered from the API"""
     file_path = "stockInfos.json"
     with open(file_path, "w") as json_file:
         json.dump(data, json_file)

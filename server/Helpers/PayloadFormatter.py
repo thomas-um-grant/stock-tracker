@@ -1,12 +1,51 @@
+"""Formatter
+
+This file is used to format the data returned by this server
+
+The methods available are:
+- formatDates -> Returns a date as a string in format "YYYY-MM-DD"
+- formatDatasets -> Returns the performances for each stock in a Chart.js data object
+"""
+
+# Libraries
 from datetime import datetime
 
 def formatDates(stock_symbol, responses):
+    """Formats the dates which will be used for the x-axis in the chart
+
+    Parameters
+    ----------
+    stock_symbols : list
+        List of the stock symbols
+    responses : object
+        key: stock symbol, value: the object returned by the Polygon API
+
+    Returns
+    -------
+    list
+        a list of dates formatted as "YYYY-MM-DD"
+    """
     dates = []
     for result in responses[stock_symbol]["results"]:
         dates.append(datetime.fromtimestamp(int(result['t'])/1000).strftime('%Y-%m-%d'))
     return dates
 
 def formatDatasets(stock_symbols, performances):
+    """Formats the datasets to match the Chart.js dataset object
+
+    Parameters
+    ----------
+    stock_symbols : list
+        List of the stock symbols
+    performances : object
+        The list of performances for each stock
+
+    Returns
+    -------
+    list
+        a list of objects formatted as Chart.js dataset objects, including the performances,
+        label and color for each stock
+    """
     # Adding colors that I like for the lines
     colors = ['rgba(145,199,177,1)', 'rgba(69,105,144,1)', 'rgba(222,165,75,1)']
     datasets = []
@@ -21,40 +60,3 @@ def formatDatasets(stock_symbols, performances):
             },
         )
     return datasets
-    
-
-# Essentially doing the same thing than v1, but I want to randomize the color, and make it all dynamic
-def formatDatasetsV2():
-    pass
-
-
-
-    datasets = []
-
-    for stock_symbol in stock_symbols:
-        stock_performance = []
-        deviation = 0
-        hasDeviation = False
-
-        for result in responses[stock_symbol]["results"]:
-            weight_price_increase = 8
-            open_price = result['o']
-            close_price = result['c']
-
-            weight_price_fluctuaction = 1
-            high_price = result['h']
-            low_price = result['l']
-
-            performance = (close_price - open_price)*weight_price_increase - (high_price - low_price)*weight_price_fluctuaction
-
-            if not hasDeviation:
-                deviation = 100 - performance
-                hasDeviation = True
-
-            # TODO: Set back to: stock_performance.append(performance + deviation)
-            stock_performance.append(close_price)
-        
-        datasets.append({ "name": stock_symbol, "performances": stock_performance })
-    
-    return datasets
-        
