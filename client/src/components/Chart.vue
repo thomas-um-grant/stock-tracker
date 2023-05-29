@@ -37,7 +37,7 @@
             };
 
             const getLatestStockInfos = async () => {
-                const path = '/stocks';
+                const path = 'http://127.0.0.1:5000/stocks';
                 try {
                     const response = await axios.get(path);
                     stockData.value = response.data;

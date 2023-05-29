@@ -12,13 +12,11 @@ The methods available are:
 # Libraries
 import math
 
-def calculate_performances(stock_symbols, responses):
+def calculate_performances(stocks):
     """Calculates the performances of each stock
 
     Parameters
     ----------
-    stock_symbols : list
-        List of the stock symbols
     responses : object
         key: stock symbol, value: the object returned by the Polygon API
 
@@ -27,26 +25,26 @@ def calculate_performances(stock_symbols, responses):
     list
         a list of performances for each stock
     """
-    performances = []
+    performances = {}
 
-    for stock_symbol in stock_symbols:
-        stock_performance = []
+    for stock_symbol, data in stocks.items():
+        performance = []
         deviation = 0
         hasDeviation = False
 
-        for result in responses[stock_symbol]["results"]:
+        for result in data["results"]:
             close_price = result['c']
             if not hasDeviation:
                 deviation = 100 - close_price
                 hasDeviation = True
 
-            stock_performance.append(close_price + deviation)
+            performance.append(close_price + deviation)
         
-        performances.append(stock_performance)
+        performances[stock_symbol] = performance
     
     return performances
 
-def calculate_cumulative_return(stock_symbols, stock_infos):
+def calculate_cumulative_return(stock_infos):
     """Calculates the cumulative return of each stock
 
     The cumulative return on the past 2 years is: (close price - open price) / open price
@@ -54,8 +52,6 @@ def calculate_cumulative_return(stock_symbols, stock_infos):
 
     Parameters
     ----------
-    stock_symbols : list
-        List of the stock symbols
     stock_infos : object
         key: stock symbol, value: the object returned by the Polygon API
 
@@ -67,15 +63,15 @@ def calculate_cumulative_return(stock_symbols, stock_infos):
 
     cumul_returns = []
 
-    for stock_symbol in stock_symbols:
-        open_price = stock_infos[stock_symbol]["results"][0]["o"]
-        close_price = stock_infos[stock_symbol]["results"][stock_infos[stock_symbol]["resultsCount"]-1]['c']
+    for stock_symbol, data in stock_infos.items():
+        open_price = data["results"][0]["o"]
+        close_price = data["results"][data["resultsCount"]-1]['c']
         cumul_return = (close_price - open_price) / open_price
         cumul_returns.append(round(cumul_return.real, 3))
 
     return cumul_returns
 
-def calculate_annualized_return(stock_symbols, stock_infos):
+def calculate_annualized_return(stock_infos):
     """Calculates the annualized return of each stock
 
     The annualized return on the past 2 years is: ( (close price / open price)^(1 / num of years) ) -1
@@ -84,8 +80,6 @@ def calculate_annualized_return(stock_symbols, stock_infos):
 
     Parameters
     ----------
-    stock_symbols : list
-        List of the stock symbols
     stock_infos : object
         key: stock symbol, value: the object returned by the Polygon API
 
@@ -96,16 +90,16 @@ def calculate_annualized_return(stock_symbols, stock_infos):
     """
     annualized_returns = []
 
-    for stock_symbol in stock_symbols:
-        open_price = stock_infos[stock_symbol]['results'][0]['o']
-        close_price = stock_infos[stock_symbol]['results'][stock_infos[stock_symbol]['resultsCount']-1]['c']
-        num_of_years = stock_infos[stock_symbol]['resultsCount'] / 252
+    for stock_symbol, data in stock_infos.items():
+        open_price = data['results'][0]['o']
+        close_price = data['results'][data['resultsCount']-1]['c']
+        num_of_years = data['resultsCount'] / 252
         annualized_return = (pow(((close_price - open_price)/open_price),(1 / num_of_years))) - 1
         annualized_returns.append(round(annualized_return.real,3))
 
     return annualized_returns
 
-def calculate_annualized_volatility(stock_symbols, stock_infos):
+def calculate_annualized_volatility(stock_infos):
     """Calculates the annualized volatility of each stock
 
     The annualized volatility on the past 2 years is: standard deviation of ( [sum(daily % change - mean(all entries)]**2 /  (number of entries -1))
@@ -114,8 +108,6 @@ def calculate_annualized_volatility(stock_symbols, stock_infos):
 
     Parameters
     ----------
-    stock_symbols : list
-        List of the stock symbols
     stock_infos : object
         key: stock symbol, value: the object returned by the Polygon API
 
@@ -126,11 +118,11 @@ def calculate_annualized_volatility(stock_symbols, stock_infos):
     """
     annualized_volatilities = []
 
-    for stock_symbol in stock_symbols:
+    for stock_symbol, data in stock_infos.items():
         daily_changes = [] # => =((close_price/open_price)-1)*100
 
         # Create a list of [daily % change ]
-        for result in stock_infos[stock_symbol]['results'][1:]:
+        for result in data['results'][1:]:
             open_price = result['o']
             close_price = result['c']
             daily_changes.append(((close_price/open_price)-1)*100)
@@ -139,7 +131,7 @@ def calculate_annualized_volatility(stock_symbols, stock_infos):
         # Reduce each of them by the average and square it
         daily_changes = [(val-mean_daily_changes)**2 for val in daily_changes]
         # Divide by N - 1
-        temp = sum(daily_changes)/(stock_infos[stock_symbol]['resultsCount']-1)
+        temp = sum(daily_changes)/(data['resultsCount']-1)
         # Now we can get the standard deviation by doing square root of the previous result
         annualized_volatility = math.sqrt(temp)
         annualized_volatilities.append(round(annualized_volatility.real,3))

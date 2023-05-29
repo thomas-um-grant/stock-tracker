@@ -3,7 +3,7 @@
 This file is used to connect and gather data from the Polygon API
 
 The methods available are:
-- getStockInfos -> Returns a Polygon stock information object regarding a stock
+- get_stock_infos -> Returns a Polygon stock information object regarding a stock
 """
 
 # Libraries

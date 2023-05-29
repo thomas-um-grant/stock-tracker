@@ -10,13 +10,11 @@ The methods available are:
 # Libraries
 from datetime import datetime
 
-def format_dates(stock_symbol, responses):
+def format_dates(responses):
     """Formats the dates which will be used for the x-axis in the chart
 
     Parameters
     ----------
-    stock_symbols : list
-        List of the stock symbols
     responses : object
         key: stock symbol, value: the object returned by the Polygon API
 
@@ -26,17 +24,23 @@ def format_dates(stock_symbol, responses):
         a list of dates formatted as "YYYY-MM-DD"
     """
     dates = []
-    for result in responses[stock_symbol]["results"]:
+    # Find the largest dataset
+    largest_set = 0
+    symbol_for_xaxis = ''
+    for symbol, data in responses.items():
+        if data["resultsCount"] > largest_set:
+            symbol_for_xaxis = symbol
+
+    # Get all the Unix timestamps to create the x-axis with dates in "YYYY-MM-DD" format         
+    for result in responses[symbol_for_xaxis]["results"]:
         dates.append(datetime.fromtimestamp(int(result['t'])/1000).strftime('%Y-%m-%d'))
     return dates
 
-def format_datasets(stock_symbols, performances):
+def format_datasets(performances):
     """Formats the datasets to match the Chart.js dataset object
 
     Parameters
     ----------
-    stock_symbols : list
-        List of the stock symbols
     performances : object
         The list of performances for each stock
 
@@ -46,17 +50,34 @@ def format_datasets(stock_symbols, performances):
         a list of objects formatted as Chart.js dataset objects, including the performances,
         label and color for each stock
     """
-    # Adding colors that I like for the lines
-    colors = ['rgba(145,199,177,1)', 'rgba(69,105,144,1)', 'rgba(222,165,75,1)']
+
+    colors = ['rgba(145,199,177,1)', # Cambrige Blue
+              'rgba(69,105,144,1)', # Lapis Lazuli
+              'rgba(222,165,75,1)', # Earth Yellow
+              'rgba(91,96,87,1)', # Ebony
+              'rgba(242,166,90,1)', # Sandy Brown
+              'rgba(119,47,26,1)', # Sienna
+              'rgba(199,234,228,1)', # Mint Green
+              'rgba(252,188,184,1)', # Melon
+              'rgba(255,217,114,1)', # Jasmine
+              'rgba(191,204,148,1)', # Sage
+              'rgba(52,73,102,1)', # Indigo Dye
+              'rgba(202,207,214,1)', # French Gray
+            ]
     datasets = []
-    for i, stock_symbol in enumerate(stock_symbols):
+    color = 0
+    for stock_symbol, performance in performances.items():
         datasets.append(
             {
                 "label": stock_symbol,
-                "data": performances[i],
+                "data": performance,
                 "fill": False,
-                "borderColor": colors[i],
+                "borderColor": colors[color],
                 "tension": 0
             },
         )
+        color += 1
+        if color == len(colors):
+            color = 0
+
     return datasets
